@@ -2,63 +2,519 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#174e3e"><meta name="description" content="Turn a shopping list into a real driving route, with transparent retailer evidence and an honest cost breakdown.">
+  <meta name="theme-color" content="#174e3e">
+  <meta name="description" content="Turn your shopping list into an ordered store route. Open the full trip in Google Maps.">
   <title>AislePilot — Your errands, in a better order</title>
-  <script defer src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./styles.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
-  <script src="./config.js" defer></script><script type="module" src="./app.mjs"></script>
+  <style>
+:root{--ink:#253b33;--muted:#56665c;--green:#174e3e;--line:#dce3d5;--paper:#f5f5ef}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}h1,h2,h3,p{margin:0}a{color:inherit}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0}button:disabled{opacity:.5;cursor:default}input,select,textarea{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;background:#fff;padding:11px 12px}input:focus,textarea:focus,select:focus{outline:2px solid #86ae96;outline-offset:2px}a:focus-visible,button:focus-visible{outline:3px solid #81b896;outline-offset:4px}.header{background:#fafbf7;border-bottom:1px solid var(--line)}.header-inner,.shell{max-width:1280px;margin:auto;padding:24px 32px}.header-inner{display:flex;justify-content:space-between;align-items:center;gap:18px;padding-top:18px;padding-bottom:18px}.brand{font-size:24px;font-weight:750;text-decoration:none;letter-spacing:-1px}.brand-icon{display:inline-grid;place-items:center;width:34px;height:36px;background:var(--green);color:#dcec95;border-radius:10px;margin-right:9px}.text-button{padding:5px 0;background:none;color:var(--green);font-size:14px;font-weight:600}.intro{margin:8px 0 26px}.intro h1{font-size:32px;line-height:1.2;letter-spacing:-1px;margin-bottom:8px}.intro p,.hint{color:var(--muted)}.workspace{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);gap:28px;align-items:start}.input-panel{padding:24px;background:#fff;border:1px solid var(--line);border-radius:18px}.panel-title{font-size:19px;margin-bottom:24px}.field-label{display:block;font-size:14px;font-weight:650;margin:0 0 8px}.hint{font-size:12px;line-height:1.6;margin:8px 0}.field-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:24px;margin-bottom:8px}.field-heading label{margin:0}textarea{min-height:220px;resize:vertical;line-height:1.8;background:#fafbf7}.list-footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--muted);margin-top:6px}.two-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}.two-fields select{font-size:14px;padding:10px 7px}.primary,.secondary{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;border-radius:10px;padding:14px 16px;font-size:15px;font-weight:650;text-decoration:none}.primary{background:var(--green);color:white}.primary:hover{background:#21634f}.secondary{border:1px solid var(--line);background:#fff;margin-top:8px}.data-note{font-size:12px;color:var(--muted);line-height:1.65;margin-top:14px}.results-panel{min-width:0;scroll-margin-top:20px}.results-panel>h2{font-size:24px;margin-bottom:12px}.status-box{display:flex;align-items:center;gap:9px;font-size:14px;min-height:26px;margin-bottom:14px}.status-dot{width:7px;height:7px;background:#60996c;border-radius:50%;flex:none}.status-box.busy .status-dot{animation:pulse 1.4s infinite}.status-box.error{color:#a04336}.status-box.error .status-dot{background:#b55845}.map-card{height:340px;border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;background:#e7edde;isolation:isolate}#map{height:100%;width:100%;z-index:0;background:#e7edde}.map-prompt{position:absolute;z-index:400;inset:0;display:grid;place-content:center;text-align:center;gap:8px;padding:32px;background:linear-gradient(120deg,#edf1e5ee,#e4ebdacc);pointer-events:none}.map-prompt strong{font-size:18px}.map-prompt span{font-size:14px;color:var(--muted)}.route-marker{border-radius:50%;background:var(--green);border:3px solid #fff;color:#fff;display:grid;place-items:center;font-family:inherit;font-weight:700;box-shadow:0 2px 9px #243c333b}.route-marker.origin{background:#dceb9a;color:#294634}.leaflet-control-attribution{font-size:10px!important}.choice-panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px}.choice-panel h3{font-size:17px;margin-bottom:6px}.choice-panel>p{font-size:14px;color:var(--muted);margin-bottom:12px}.origin-option{display:flex;align-items:center;justify-content:space-between;width:100%;gap:14px;padding:14px 0;border-top:1px solid var(--line);text-align:left;background:none}.origin-option small{display:block;margin-top:4px;font-size:12px;color:var(--muted)}.origin-option>span:last-child{font-size:23px;color:var(--green)}.review-item{display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:center;border-top:1px solid var(--line);padding:10px 0}.review-item span{overflow-wrap:anywhere}.review-item select{font-size:14px;padding:7px}.choice-panel .primary{margin-top:14px}.route-actions{margin:20px 0 14px;padding:20px;border-radius:14px;background:#fff;border:1px solid var(--line)}.route-summary{font-weight:650;margin-bottom:13px}.route-actions .primary{font-size:16px;min-height:50px}.route-actions .hint{margin-bottom:0}.review-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:22px 0 14px}.review-row h3{font-size:18px}.stop-count{font-size:13px;color:var(--muted)}.route-stop{background:#fff;border:1px solid var(--line);border-radius:14px;margin:12px 0;overflow:hidden}.stop-header{display:flex;align-items:flex-start;gap:12px;padding:18px}.stop-number{width:32px;height:32px;border-radius:9px;background:#eaf0df;display:grid;place-items:center;flex:none;font-size:14px;font-weight:700}.stop-info{flex:1;min-width:0}.stop-info h3{font-size:17px;letter-spacing:-.2px}.stop-info p{font-size:13px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}.leg-badge{font-size:12px;color:var(--muted);text-align:right}.stop-items{list-style:none;padding:0 18px 16px 62px;margin:0}.stop-items li{padding:6px 0;border-top:1px solid #e9eddf;font-size:14px;overflow-wrap:anywhere}.route-end{margin:12px 0;padding:14px 18px;border-left:2px dashed #aabd98;font-size:14px}.unassigned{background:#fcf8ec;border:1px solid #ece2c6;padding:16px;margin:16px 0;border-radius:12px;color:#755e2e;font-size:14px}.unassigned strong{display:block;margin-bottom:4px}.empty-route{margin-top:20px;padding:24px;border:1px dashed #cdd7c1;border-radius:14px;color:var(--muted);font-size:14px}.method-note{font-size:12px;line-height:1.7;color:var(--muted);margin-top:16px}footer{border-top:1px solid var(--line);margin-top:32px;padding:20px 0;font-size:12px;color:var(--muted)}dialog{border:1px solid var(--line);border-radius:18px;padding:24px;max-width:510px;width:calc(100% - 32px);color:var(--ink);box-shadow:0 25px 100px #10291c33}dialog::backdrop{background:#1b332859}.dialog-top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}.dialog-top h2{font-size:21px}.dialog-top button{background:none;font-size:25px}.how-list{padding-left:22px}.how-list li{padding-left:4px;margin:14px 0}.how-list p{font-size:14px;color:var(--muted);margin-top:4px}.skip{position:absolute;left:-10000px;top:8px;background:#fff;padding:10px;z-index:9999}.skip:focus{left:8px}[hidden]{display:none!important}@keyframes pulse{50%{opacity:.3}}@media(max-width:780px){.workspace{grid-template-columns:1fr;gap:26px}.header-inner,.shell{padding-left:18px;padding-right:18px}.intro h1{font-size:29px}.input-panel{padding:20px}.map-card{height:310px}.review-item{grid-template-columns:1fr}.stop-header{flex-wrap:wrap}.leg-badge{margin-left:44px;text-align:left}.stop-items{padding-left:18px}.header-inner{gap:10px}.brand{font-size:22px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
   <a href="#planner" class="skip">Skip to planner</a>
-  <header class="header"><div class="header-inner">
-    <a class="brand" href="./" aria-label="AislePilot home"><span class="brand-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 18 10 5h4l5 13M7.5 12h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m9 18 3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>AislePilot<span class="version">02</span></a>
-    <nav aria-label="Main navigation"><a href="#planner" class="nav-active">Trip planner</a><button id="about-button" type="button">How it works</button></nav>
-    <button class="connection" id="connection-button" type="button"><span class="status-dot"></span><span id="connection-label">Map mode</span><span aria-hidden="true">↗</span></button>
-  </div></header>
+  <header class="header"><div class="header-inner"><a class="brand" href="./"><span class="brand-icon" aria-hidden="true">A</span>AislePilot</a><button id="about-button" class="text-button" type="button">How it works</button></div></header>
   <main id="planner" class="shell">
-    <section class="intro"><div><h1>Plan your shopping trip.</h1><p>Add your list and starting address to compare real store routes.</p></div></section>
+    <section class="intro"><h1>Your list. Your stops. Your route.</h1><p>Plan the store order, then open the full trip in Google Maps.</p></section>
     <div class="workspace">
       <aside class="input-panel">
-        <div class="panel-title"><span class="section-number">01</span><h2>Build your trip</h2><span class="subtle">Start here</span></div>
+        <h2 class="panel-title">Build your trip</h2>
         <form id="trip-form">
           <label class="field-label" for="address">Where are you starting?</label>
-          <div class="address-wrap"><span aria-hidden="true">⌖</span><input id="address" name="address" autocomplete="street-address" placeholder="Street address, city, state" maxlength="300" required></div>
-          <p class="hint">Or enter latitude, longitude. You’ll confirm the map pin.</p>
+          <input id="address" name="address" autocomplete="street-address" placeholder="Street address, city, state" maxlength="300" required>
+          <p class="hint">Or enter latitude, longitude. You’ll confirm the starting point.</p>
           <div class="field-heading"><label class="field-label" for="shopping-list">What’s on your list?</label><button class="text-button" id="example-button" type="button">Try a list ↗</button></div>
-          <textarea id="shopping-list" name="list" maxlength="12000" rows="10" placeholder="2 milk&#10;eggs&#10;bread&#10;bananas&#10;coffee&#10;1 basketball&#10;flower pot&#10;Dune paperback" required></textarea>
+          <textarea id="shopping-list" name="list" maxlength="12000" rows="9" placeholder="2 milk&#10;eggs&#10;basketball&#10;flower pot&#10;Dune paperback" required></textarea>
           <div class="list-footer"><span>New lines, commas & checklists welcome</span><span id="list-count">0 items</span></div>
           <div class="two-fields"><div><label class="field-label" for="radius">Search radius</label><select id="radius"><option value="5">5 km · 3 mi</option><option value="8" selected>8 km · 5 mi</option><option value="15">15 km · 9 mi</option><option value="20">20 km · 12 mi</option></select></div><div><label class="field-label" for="round-trip">Finish your trip</label><select id="round-trip"><option value="no">At the last store</option><option value="yes">Back at the start</option></select></div></div>
-          <label class="checkline"><input id="use-quotes" type="checkbox" checked><span>Use matching online prices as estimates<small>Candidate products and package sizes need review.</small></span></label>
-          <button id="optimize" class="primary w-full" type="submit"><span>Optimize My Route</span><span aria-hidden="true">↗</span></button>
-          <button id="cancel" class="secondary w-full" type="button" hidden>Cancel current request</button>
-          <p class="data-note">Your address is sent to the geocoder. Coordinates go to map and routing services; item names go to selected retailers when a backend is connected.</p>
+          <button id="optimize" class="primary" type="submit">Optimize My Route <span aria-hidden="true">↗</span></button>
+          <button id="cancel" class="secondary" type="button" hidden>Cancel</button>
+          <p class="data-note">Confirm unfamiliar item categories when prompted. Stores are matched by type; check availability before leaving.</p>
         </form>
-        <div class="mini-guide"><span aria-hidden="true">✳</span><div><strong>For a more specific match</strong><p>Add quantities and sizes, or paste an official product link after an item for a more specific lookup.</p></div></div>
-        <details class="settings-details"><summary>Tax assumptions & preferences</summary><p class="hint">Enter your own effective rates. Blank means unknown; 0 means tax-free. No jurisdiction is inferred.</p><div class="two-fields"><div><label for="tax-grocery">Groceries (%)</label><input type="number" id="tax-grocery" min="0" max="30" step="0.01" placeholder="Unknown"></div><div><label for="tax-other">Other items (%)</label><input type="number" id="tax-other" min="0" max="30" step="0.01" placeholder="Unknown"></div></div><p class="hint">Estimates are in USD. Fuel, deposits, delivery, memberships and coupons are excluded.</p></details>
       </aside>
       <section class="results-panel" aria-label="Trip results">
-        <div class="results-heading"><div><span class="eyebrow">YOUR TRIP, AT A GLANCE</span><h2>Your route and budget</h2></div><button id="export" type="button" class="icon-button" disabled title="Download your trip as JSON" aria-label="Download trip report"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <h2>Your route</h2>
         <div id="status" class="status-box" role="status" aria-live="polite"><span class="status-dot"></span><span>Add your address and shopping list to get started.</span></div>
-        <div class="map-card"><div id="map" aria-label="Interactive OpenStreetMap map"></div><div class="map-label"><span class="status-dot"></span> OPENSTREETMAP <span class="map-label-separator">/</span> OSRM ROUTING</div><div id="map-prompt" class="map-prompt"><div class="compass" aria-hidden="true">↗</div><strong>Your next trip starts here.</strong><span>Confirm a starting point to explore nearby stores.</span></div><div id="map-stats" class="map-stats" hidden></div></div>
+        <div class="map-card"><div id="map" aria-label="Interactive OpenStreetMap map"></div><div id="map-prompt" class="map-prompt"><strong>Your next trip starts here.</strong><span>Confirm a starting point to find nearby stores.</span></div></div>
         <div id="origin-choices" class="choice-panel" hidden></div>
         <div id="review-panel" class="choice-panel" hidden></div>
-        <div class="financial-grid">
-          <div class="money-card featured"><div class="metric-label" id="total-label">ESTIMATED KNOWN AMOUNT</div><div class="amount" id="total">—</div><div class="metric-caption" id="coverage">Prices appear with their evidence.</div></div>
-          <div class="money-card"><div class="metric-label">ITEM SUBTOTAL</div><div class="small-amount" id="subtotal">—</div><div class="metric-caption" id="subtotal-note">No prices assumed</div></div>
-          <div class="money-card"><div class="metric-label">TAX ESTIMATE</div><div class="small-amount" id="tax">—</div><div class="metric-caption" id="tax-note">Set your effective rates</div></div>
+        <div id="route-result" hidden>
+          <div class="route-actions"><p id="route-summary" class="route-summary"></p><a id="google-route" class="primary" target="_blank" rel="noopener noreferrer">Open route in Google Maps ↗</a><p id="waypoint-note" class="hint" hidden>For this many stops, use the Google Maps app or desktop. Mobile browsers support only three intermediate stops.</p><p id="preview-note" class="hint" hidden></p></div>
+          <div class="review-row"><h3>Your store sequence</h3><span id="stop-count" class="stop-count"></span><button id="review-categories" class="text-button" type="button">Review categories ↗</button></div>
+          <div id="unassigned" class="unassigned" hidden></div>
+          <div id="route-list"></div>
         </div>
-        <div id="cost-categories" class="category-summary" hidden></div>
-        <div class="route-heading"><h2><span class="section-number">02</span> Your store sequence</h2><span id="stop-count" class="subtle">Ready when you are</span></div>
-        <div id="route-list"><div class="empty-route"><div class="empty-symbol" aria-hidden="true">⌁</div><div><strong>Your stops will appear here.</strong><p>We’ll compare nearby stores, connect the stops by road, and show what we can actually verify.</p></div></div></div>
-        <p id="route-method" class="method-note">Optimizes driving time across a shortlist of nearby stores. Store categories suggest availability; they don’t prove inventory. Road estimates exclude live traffic and time spent shopping.</p>
+        <div id="empty-route" class="empty-route">Your ordered stops and Google Maps button will appear here.</div>
+        <p id="route-method" class="method-note">Compares driving times across nearby stores. Store types suggest what they sell; stock and opening hours aren’t checked. Driving estimates exclude live traffic and shopping time.</p>
       </section>
     </div>
-    <footer><span class="brand-small">AislePilot <span> / </span> Know your next stop.</span><span>Maps © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> · Geocoding by Photon · Routes by OSRM</span></footer>
+    <footer>Maps © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a> · Address & store lookup by Photon · Road routes by OSRM</footer>
   </main>
-  <dialog id="connection-dialog"><form method="dialog" class="dialog-top"><h2>Connect your backend</h2><button class="icon-button" aria-label="Close connection settings">×</button></form><p>GitHub Pages hosts this dashboard. Your Playwright backend checks retailer pages and can also relay map requests.</p><label class="field-label" for="api-base">Backend URL</label><input id="api-base" type="url" placeholder="https://your-backend.example.com" autocomplete="off"><p class="hint">Leave blank for maps and routes only. Local development accepts http://localhost:8787.</p><label class="field-label" for="api-token">Access token</label><input id="api-token" type="password" placeholder="Your private backend token" autocomplete="off"><p class="hint">The token stays in this tab’s memory. Never put it in your public repository.</p><div class="dialog-actions"><button class="secondary" id="test-connection" type="button">Test connection</button><button class="primary" id="save-connection" type="button">Save connection</button></div><p id="connection-status" role="status"></p></dialog>
-  <dialog id="about-dialog"><form method="dialog" class="dialog-top"><h2>A clear view of your trip</h2><button class="icon-button" aria-label="Close explanation">×</button></form><ol class="how-list"><li><strong>Find real places.</strong><p>Confirm a geocoded address. OpenStreetMap supplies nearby stores, coordinates and any available street addresses.</p></li><li><strong>Compare the drive.</strong><p>OSRM supplies road travel times. The planner finds the shortest sequence that covers your categories within a shortlist of up to three nearby stores per category.</p></li><li><strong>Check the evidence.</strong><p>A connected Chromium browser looks for public product offers. It respects robots.txt and access blocks. Online availability is different from stock at your selected branch.</p></li><li><strong>Build an honest budget.</strong><p>Matching online offers can supply candidate estimates. Unknowns stay unknown; add your own unit budgets. Specific quantities such as pounds and dozens need a budget in that unit.</p></li></ol><p class="hint">Public data services are best-effort and maps can be incomplete. Opening hours are shown as source data; the route does not filter for stores currently open.</p></dialog>
-  <noscript><p class="status-box">AislePilot needs JavaScript to parse your list and calculate routes.</p></noscript>
+  <dialog id="about-dialog"><form method="dialog" class="dialog-top"><h2>From list to route</h2><button aria-label="Close explanation">×</button></form><ol class="how-list"><li><strong>Add your list and starting address.</strong><p>Confirm the address match and review any unfamiliar item categories.</p></li><li><strong>Find your store order.</strong><p>The planner compares road travel times across up to three nearby stores per category.</p></li><li><strong>Open Google Maps.</strong><p>One button sends the ordered stops, including a return to your start if selected. Google Maps may show a route preview before navigation.</p></li></ol><p class="hint">Public mapping services can be temporarily unavailable. Your address and coordinates go to Photon. Coordinates also go to public Overpass backup services (VK Maps, Private.coffee or overpass-api.de) and OSRM. The Google Maps link includes your starting point and stops.</p></dialog>
+  <noscript><p class="status-box">AislePilot needs JavaScript to calculate your route.</p></noscript>
+  <script type="module" id="route-app">
+// Shopping-list parsing and road-time store ordering.
+export const CATEGORIES = {
+  groceries: { label: 'Groceries', color: '#247b63', aliases: ['milk','eggs','bread','banana','bananas','apple','apples','chicken','beef','rice','pasta','yogurt','cheese','butter','coffee','tea','lettuce','tomato','tomatoes','potato','potatoes','onion','onions','cereal','flour','sugar','salt','pepper','juice','water','broccoli','carrots','orange','oranges','salmon','oats','beans','tofu','spinach','peanut butter','olive oil','avocado','avocados'] },
+  sports: { label: 'Sports', color: '#cc683d', aliases: ['basketball','football','soccer ball','tennis','tennis ball','racket','dumbbell','yoga mat','baseball','golf','running shoes','volleyball','kettlebell'] },
+  home: { label: 'Home & garden', color: '#a06f48', aliases: ['flower pot','flowerpot','plant pot','planter','vase','pillow','towel','curtain','rug','candle','bedding','blanket','lamp','picture frame','plate','mug'] },
+  books: { label: 'Books', color: '#8263ad', aliases: ['book','books','novel','paperback','hardcover','textbook','dune','the hobbit'] },
+  hardware: { label: 'Hardware', color: '#626e85', aliases: ['hammer','screwdriver','screws','nails','drill','paint','light bulb','lightbulb','duct tape','wrench','lumber','extension cord'] },
+  pharmacy: { label: 'Health & care', color: '#bd6688', aliases: ['toothpaste','toothbrush','shampoo','soap','deodorant','ibuprofen','acetaminophen','vitamin','vitamins','bandage','sunscreen','floss'] },
+  electronics: { label: 'Electronics', color: '#407eab', aliases: ['headphones','earbuds','charger','usb cable','keyboard','mouse','monitor','laptop','hdmi','battery','batteries'] },
+  pets: { label: 'Pets', color: '#ad872b', aliases: ['dog food','cat food','cat litter','dog toy','cat toy','pet food','leash','dog collar'] }
+};
+export const normalize = s => String(s).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+export function categorize(text) {
+  const padded = ` ${normalize(text)} `;
+  let match = null, length = 0;
+  for (const [key, category] of Object.entries(CATEGORIES)) for (const term of category.aliases) {
+    if (padded.includes(` ${term} `) && term.length > length) { match = key; length = term.length; }
+  }
+  return match;
+}
+function splitList(text) {
+  const parts = []; let current = '', depth = 0, quote = '';
+  for (const c of text.replace(/\r/g,'')) {
+    if (c === '"') quote = quote ? '' : c;
+    if (!quote && (c === '(' || c === '[')) depth++;
+    if (!quote && (c === ')' || c === ']')) depth = Math.max(0,depth-1);
+    if (c === '\n' || (!depth && !quote && (c === ',' || c === ';'))) { parts.push(current); current=''; depth=0; quote=''; }
+    else current += c;
+  }
+  parts.push(current); return parts;
+}
+const numberValue = s => s.includes('/') ? s.split('/').map(Number).reduce((a,b)=>a/b) : Number(s);
+export function parseInput(raw) {
+  if (typeof raw !== 'string' || raw.length > 12000) throw new Error('Use a shopping list of at most 12,000 characters.');
+  const result = []; let section = null;
+  for (let line of splitList(raw)) {
+    line = line.trim();
+    if (!line || /^(?:[-*+]\s*)?\[[xX]\]/.test(line)) continue;
+    if (/^#+\s|^[\w &]+:$/.test(line)) {
+      const title = normalize(line);
+      section = Object.keys(CATEGORIES).find(k => normalize(CATEGORIES[k].label) === title || k === title) || null;
+      continue;
+    }
+    line = line.replace(/^\s*(?:[-*+]\s+|\d+[.)]\s+)/,'').replace(/^\[ \]\s*/,'').replace(/\*\*|__/g,'');
+    line = line.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,(_,label)=>label);
+    line = line.replace(/https?:\/\/[^\s]+/g,()=>'').trim();
+    let quantity=1, unit='item';
+    const start = line.match(/^(\d+(?:\.\d+|\/\d+)?)(?:\s*(?:x|×)\s*|\s+)(?:(lbs?|pounds?|kg|g|oz|ounces?|liters?|litres?|l|ml|dozen|packs?|boxes?|bottles?|cans?|bags?|gallons?)\b\s*(?:of\s+)?)?(.+)$/i);
+    const end = line.match(/^(.+?)\s+(?:x|×)\s*(\d+(?:\.\d+)?)$/i);
+    if(start){quantity=numberValue(start[1]);unit=(start[2]||'item').toLowerCase();line=start[3].trim();}
+    else if(end){line=end[1].trim();quantity=Number(end[2]);}
+    if (!line || !Number.isFinite(quantity) || quantity<=0 || quantity>999) throw new Error('Use positive quantities up to 999 and include an item name.');
+    if (line.length>240) throw new Error('Keep each item under 240 characters. Use new lines between items.');
+    const category=categorize(line)||section;
+    const existing=result.find(i=>normalize(i.name)===normalize(line)&&i.unit===unit&&i.category===category);
+    if(existing){existing.quantity+=quantity;if(existing.quantity>999)throw new Error('Combined item quantity exceeds 999.');}
+    else result.push({id:`item-${result.length+1}`,name:line,quantity,unit,category});
+  }
+  if(result.length>40)throw new Error('Plan up to 40 distinct items at a time.');
+  return result;
+}
+export function validPoint(p) { return p && Number.isFinite(p.lat) && Number.isFinite(p.lon) && Math.abs(p.lat)<=90 && Math.abs(p.lon)<=180; }
+export function coordinateInput(text) {
+  const m=String(text).trim().match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+  if(!m)return null;
+  const point={lat:Number(m[1]),lon:Number(m[2]),label:`${m[1]}, ${m[2]}`,precision:'Coordinates supplied by you'};
+  if(!validPoint(point))throw new Error('Coordinates must be latitude, longitude within their valid ranges.');
+  return point;
+}
+export function kmBetween(a,b) {
+  const r=Math.PI/180, dlat=(b.lat-a.lat)*r, dlon=(b.lon-a.lon)*r;
+  return 12742*Math.asin(Math.min(1,Math.sqrt(Math.sin(dlat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dlon/2)**2)));
+}
+const SHOP_CATEGORY={supermarket:['groceries'],greengrocer:['groceries'],convenience:['groceries'],sports:['sports'],outdoor:['sports'],garden_centre:['home'],houseware:['home'],interior_decoration:['home'],furniture:['home'],department_store:['home'],books:['books'],hardware:['hardware'],doityourself:['hardware','home'],chemist:['pharmacy'],electronics:['electronics'],computer:['electronics'],pet:['pets']};
+export function storesFromOSM(data, origin) {
+  const result=[];
+  for(const e of data.elements||[]) {
+    const tags=e.tags||{}, p={lat:e.lat??e.center?.lat,lon:e.lon??e.center?.lon};
+    if(!validPoint(p)||tags.disused==='yes'||tags.access==='private'||tags.shop==='vacant')continue;
+    const name=tags.name||tags.brand||`Unnamed ${tags.shop||'pharmacy'}`;
+    let categories=[...(SHOP_CATEGORY[tags.shop]||[])];
+    if(tags.amenity==='pharmacy')categories.push('pharmacy');
+    if(/\b(walmart|target|meijer)\b/i.test(name))categories=Object.keys(CATEGORIES).filter(k=>k!=='hardware');
+    if(/dick.?s sporting/i.test(name))categories=['sports'];
+    if(/homegoods|home goods/i.test(name))categories=['home'];
+    if(/barnes\s*(?:&|and)\s*noble/i.test(name))categories=['books'];
+    if(!categories.length)continue;
+    const street=[tags['addr:housenumber'],tags['addr:street']].filter(Boolean).join(' ');
+    const address=[street,tags['addr:city']||tags['addr:town'],tags['addr:state'],tags['addr:postcode']].filter(Boolean).join(', ');
+    const store={id:`${e.type}/${e.id}`,name,...p,categories:[...new Set(categories)],address:address||'Street address not supplied by OpenStreetMap',addressComplete:!!street,website:tags.website||tags['contact:website']||null,phone:tags.phone||tags['contact:phone']||null,openingHours:tags.opening_hours||null,sourceUrl:`https://www.openstreetmap.org/${e.type}/${e.id}`,distanceKm:kmBetween(origin,p)};
+    if(!result.some(s=>normalize(s.name)===normalize(name)&&kmBetween(s,p)<0.075))result.push(store);
+  }
+  return result.sort((a,b)=>a.distanceKm-b.distanceKm||a.id.localeCompare(b.id));
+}
+export function shortlistStores(stores, categories, perCategory=3) {
+  const ids=new Set();
+  for(const category of categories)stores.filter(s=>s.categories.includes(category)).slice(0,perCategory).forEach(s=>ids.add(s.id));
+  return stores.filter(s=>ids.has(s.id));
+}
+// Exact group-cover shortest path on a directed duration matrix. Each selected
+// stop adds a category; weights are nonnegative shortest-road durations.
+export function sortRoute(stores, durations, categories, returnHome=false) {
+  const available=categories.filter(c=>stores.some(s=>s.categories.includes(c)));
+  const missing=categories.filter(c=>!available.includes(c));
+  if(!available.length)return {stops:[],missing,duration:0,covered:[],unreachable:false};
+  const n=stores.length;
+  if(n>24||available.length>8||durations.length!==n+1||durations.some(r=>!Array.isArray(r)||r.length!==n+1))throw new Error('Invalid or oversized driving matrix.');
+  const finite=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0;
+  const masks=stores.map(s=>available.reduce((m,c,i)=>s.categories.includes(c)?m|(1<<i):m,0));
+  const full=(1<<available.length)-1, dp=Array.from({length:full+1},()=>Array(n).fill(Infinity)), prev=new Map();
+  for(let j=0;j<n;j++)if(masks[j]&&finite(durations[0][j+1])){dp[masks[j]][j]=durations[0][j+1];prev.set(`${masks[j]}:${j}`,null);}
+  for(let mask=1;mask<=full;mask++)for(let i=0;i<n;i++)if(Number.isFinite(dp[mask][i]))for(let j=0;j<n;j++){
+    const next=mask|masks[j], leg=durations[i+1][j+1];
+    if(next===mask||!finite(leg))continue;
+    const cost=dp[mask][i]+leg;
+    if(cost<dp[next][j]){dp[next][j]=cost;prev.set(`${next}:${j}`,[mask,i]);}
+  }
+  let best=Infinity,last=-1;
+  for(let i=0;i<n;i++){
+    const back=returnHome?durations[i+1][0]:0;
+    if(finite(back)&&dp[full][i]+back<best){best=dp[full][i]+back;last=i;}
+  }
+  if(last<0)return {stops:[],missing,duration:null,covered:[],unreachable:true};
+  const stops=[];let cursor=[full,last];
+  while(cursor){stops.unshift(stores[cursor[1]]);cursor=prev.get(`${cursor[0]}:${cursor[1]}`);}
+  return {stops,missing,duration:best,covered:available,unreachable:false};
+}
+export function assignItems(items, stops) { return items.map(item=>({...item,storeId:stops.find(s=>s.categories.includes(item.category))?.id||null})); }
+export function fullRouteURL(origin,stops,returnHome=false) {
+  if(!validPoint(origin)||!Array.isArray(stops)||!stops.length||!stops.every(validPoint))return null;
+  const destination=returnHome?origin:stops.at(-1);
+  const waypoints=returnHome?stops:stops.slice(0,-1);
+  const params=new URLSearchParams({
+    api:'1',
+    origin:`${origin.lat},${origin.lon}`,
+    destination:`${destination.lat},${destination.lon}`,
+    travelmode:'driving',
+    dir_action:'navigate'
+  });
+  if(waypoints.length)params.set('waypoints',waypoints.map(p=>`${p.lat},${p.lon}`).join('|'));
+  return `https://www.google.com/maps/dir/?${params}`;
+}
+export const DEFAULT_PROVIDERS={photon:'https://photon.komoot.io',overpass:'https://maps.mail.ru/osm/tools/overpass/api/interpreter',overpassFallbacks:['https://overpass.private.coffee/api/interpreter','https://overpass-api.de/api/interpreter'],osrm:'https://router.project-osrm.org'};
+export async function fetchJSON(url, options={}) {
+  const signal=options.signal?AbortSignal.any([options.signal,AbortSignal.timeout(45000)]):AbortSignal.timeout(45000);
+  let response;
+  try { response=await fetch(url,{...options,signal}); }
+  catch(e){if(e.name==='AbortError')throw e;throw new Error(`Data service could not be reached (${new URL(url).hostname}). Try again in a moment.`);}
+  if(!response.ok){const error=new Error(`Data service returned HTTP ${response.status} (${new URL(url).hostname}).`);error.status=response.status;throw error;}
+  const data=await response.json();
+  if(data.remark)throw new Error(`Store lookup could not complete: ${data.remark.slice(0,180)}`);
+  return data;
+}
+function validatePoints(points,max=25) {
+  if(!Array.isArray(points)||points.length<2||points.length>max||!points.every(validPoint))throw new Error('Invalid route coordinates.');
+  return points.map(p=>`${p.lon.toFixed(6)},${p.lat.toFixed(6)}`).join(';');
+}
+export function storesFromPhoton(data,origin,radiusKm) {
+  const types={N:'node',W:'way',R:'relation',node:'node',way:'way',relation:'relation'};
+  const elements=(data.features||[]).flatMap(feature=>{
+    const props=feature.properties||{},coords=feature.geometry?.coordinates||[];
+    const type=types[props.osm_type];
+    if(!type || !Number.isFinite(props.osm_id) || !validPoint({lat:coords[1],lon:coords[0]}))return [];
+    if(props.osm_key!=='shop' && !(props.osm_key==='amenity' && props.osm_value==='pharmacy'))return [];
+    return [{type,id:props.osm_id,lat:coords[1],lon:coords[0],tags:{[props.osm_key]:props.osm_value,name:props.name,
+      'addr:housenumber':props.housenumber,'addr:street':props.street,'addr:city':props.city||props.town||props.village,
+      'addr:state':props.state,'addr:postcode':props.postcode}}];
+  });
+  return storesFromOSM({elements},origin).filter(store=>store.distanceKm<=radiusKm);
+}
+export function createProviders(config=DEFAULT_PROVIDERS, request=fetchJSON) {
+  const storeCache=new Map();
+  return {
+    async geocode({query},signal) {
+      if(typeof query!=='string'||query.trim().length<3||query.length>300)throw new Error('Enter an address with a city and region.');
+      const url=new URL('/api/',config.photon);url.search=new URLSearchParams({q:query,limit:'5',lang:'en'});
+      const data=await request(url.toString(),{signal});
+      return (data.features||[]).map(f=>{
+        const p=f.properties||{}, coords=f.geometry?.coordinates||[];
+        return {lat:coords[1],lon:coords[0],label:[p.name,[p.housenumber,p.street].filter(Boolean).join(' '),p.city||p.town||p.village,p.state,p.postcode,p.country].filter((v,i,a)=>v&&a.indexOf(v)===i).join(', '),precision:p.housenumber?'Street address':p.street?'Street-level match; confirm the pin':'Area or place match; confirm the pin',source:'Photon / OpenStreetMap'};
+      }).filter(validPoint);
+    },
+    async stores({origin,radiusKm=8,categories=Object.keys(CATEGORIES),onProgress=()=>{}},signal) {
+      signal?.throwIfAborted();
+      if(!validPoint(origin)||!Number.isFinite(radiusKm)||radiusKm<1||radiusKm>20)throw new Error('Use a search radius between 1 and 20 km.');
+      if(!Array.isArray(categories)||!categories.length||categories.some(category=>!CATEGORIES[category]))throw new Error('Choose valid item categories before searching.');
+      const wanted=[...new Set(categories)].sort();
+      const cacheKey=JSON.stringify([origin.lat,origin.lon,radiusKm,wanted]);
+      const cached=storeCache.get(cacheKey);
+      if(cached && Date.now()-cached.at<5*60*1000)return cached.result;
+      if(config.photonStoreSearch!==false) {
+        try {
+          const found=new Map();let truncated=false;
+          for(const [index,category] of wanted.entries()) {
+            signal?.throwIfAborted();
+            onProgress(`Finding nearby ${CATEGORIES[category].label.toLowerCase()} stores (${index+1}/${wanted.length})…`);
+            const url=new URL('/reverse',config.photon);
+            url.search=new URLSearchParams({lat:String(origin.lat),lon:String(origin.lon),radius:String(radiusKm),limit:'8',lang:'en'});
+            for(const [shop,types] of Object.entries(SHOP_CATEGORY))if(types.includes(category))url.searchParams.append('osm_tag',`shop:${shop}`);
+            if(category==='pharmacy')url.searchParams.append('osm_tag','amenity:pharmacy');
+            const lookupSignal=AbortSignal.any([signal,AbortSignal.timeout(12000)].filter(Boolean));
+            const data=await request(url.toString(),{signal:lookupSignal});
+            if(!Array.isArray(data.features))throw new Error('Nearby search returned incomplete data.');
+            truncated ||= data.features.length>=8;
+            for(const store of storesFromPhoton(data,origin,radiusKm))found.set(store.id,store);
+          }
+          signal?.throwIfAborted();
+          if(found.size) {
+            const result={stores:[...found.values()].sort((a,b)=>a.distanceKm-b.distanceKm),truncated,provider:'Photon'};
+            if(storeCache.size>=8)storeCache.delete(storeCache.keys().next().value);
+            storeCache.set(cacheKey,{at:Date.now(),result});
+            return result;
+          }
+        } catch(error) { if(signal?.aborted)throw signal.reason; }
+        onProgress('Nearby search could not find stores. Trying another map service…');
+      }
+      const around=`around:${Math.round(radiusKm*1000)},${origin.lat},${origin.lon}`;
+      const latitudeDelta=radiusKm/110.5;
+      const longitudeDelta=latitudeDelta/Math.max(0.001,Math.cos((Math.abs(origin.lat)+latitudeDelta)*Math.PI/180));
+      // A small indexed bounding box is faster than a large around scan.
+      const area=origin.lon-longitudeDelta>=-180 && origin.lon+longitudeDelta<=180 && Math.abs(origin.lat)+latitudeDelta<90
+        ? [origin.lat-latitudeDelta,origin.lon-longitudeDelta,origin.lat+latitudeDelta,origin.lon+longitudeDelta].join(',')
+        : around;
+      const shops=Object.entries(SHOP_CATEGORY).filter(([,types])=>types.some(type=>wanted.includes(type))).map(([shop])=>shop);
+      const clauses=[];
+      if(shops.length)clauses.push(`nwr[shop~"^(${shops.join('|')})$"](${area});`);
+      if(wanted.includes('pharmacy'))clauses.push(`nwr[amenity=pharmacy](${area});`);
+      // Include general stores already recognized by storesFromOSM.
+      if(!wanted.includes('groceries') && wanted.some(category=>category!=='hardware'))clauses.push(`nwr[shop~"^(supermarket|department_store)$"][name~"(walmart|target|meijer)",i](${area});`);
+      const query=`[out:json][timeout:12];(${clauses.join('')});out center tags 1500;`;
+      const endpoints=[...new Set([config.overpass,...(config.overpassFallbacks||[])])];
+      for(let index=0;index<endpoints.length;index++) {
+        signal?.throwIfAborted();
+        if(index)onProgress('Store search is taking longer than expected. Trying another service…');
+        const attemptSignal=AbortSignal.any([signal,AbortSignal.timeout(16000)].filter(Boolean));
+        try {
+          const data=await request(endpoints[index],{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({data:query}).toString(),signal:attemptSignal});
+          signal?.throwIfAborted();
+          if(!Array.isArray(data.elements)||data.remark)throw new Error('Store lookup returned incomplete data.');
+          const result={stores:storesFromOSM(data,origin).filter(store=>store.distanceKm<=radiusKm),truncated:data.elements.length>=1500};
+          if(storeCache.size>=8)storeCache.delete(storeCache.keys().next().value);
+          storeCache.set(cacheKey,{at:Date.now(),result});
+          return result;
+        } catch(error) {
+          if(signal?.aborted)throw signal.reason;
+          // Invalid query/client errors will not improve on a different host.
+          if(error.status>=400 && error.status<500 && ![406,408,429].includes(error.status))throw error;
+          if(index===endpoints.length-1)throw new Error('Store search services are temporarily unavailable. Try again shortly or choose a smaller search radius.');
+        }
+      }
+      throw new Error('No store search service is configured.');
+    },
+    async matrix({points},signal) {
+      const coords=validatePoints(points), radiuses=points.map(()=>250).join(';');
+      const data=await request(`${config.osrm.replace(/\/$/,'')}/table/v1/driving/${coords}?annotations=duration&radiuses=${radiuses}`,{signal});
+      if(data.code!=='Ok')throw new Error(`Driving matrix unavailable: ${data.message||data.code}. Try another origin or exclude an inaccessible store.`);
+      return {durations:data.durations,sources:data.sources};
+    },
+    async route({points},signal) {
+      const coords=validatePoints(points,10), radiuses=points.map(()=>250).join(';');
+      const data=await request(`${config.osrm.replace(/\/$/,'')}/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=true&continue_straight=false&radiuses=${radiuses}`,{signal});
+      if(data.code!=='Ok'||!data.routes?.[0])throw new Error(`Driving route unavailable: ${data.message||data.code}.`);
+      return {route:data.routes[0],waypoints:data.waypoints};
+    }
+  };
+}
+
+
+function startApp() {
+  const $ = id => document.getElementById(id);
+  const escapeHTML = text => String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const distance = meters => `${(meters / 1609.344).toFixed(1)} mi`;
+  const minutes = seconds => `${Math.max(1, Math.round(seconds / 60))} min`;
+  const client = createProviders();
+  const state = {items: [], origin: null, plan: null, controller: null, busy: false};
+  let map = null, layers = null;
+
+  function status(text, type = '') {
+    $('status').className = `status-box ${type}`;
+    $('status').lastElementChild.textContent = text;
+  }
+  function setBusy(busy) {
+    state.busy = busy;
+    $('cancel').hidden = !busy;
+    for (const id of ['optimize','address','shopping-list','radius','round-trip','example-button','review-categories']) $(id).disabled = busy;
+    for (const control of document.querySelectorAll('#origin-choices button, #review-panel button, #review-panel select')) control.disabled = busy;
+  }
+  function initializeMap() {
+    if (!window.L) {
+      $('map-prompt').innerHTML = '<strong>Map preview unavailable.</strong><span>Your ordered stops and Google Maps link will still work.</span>';
+      return;
+    }
+    try {
+      map = L.map('map', {scrollWheelZoom:false}).setView([39.8,-98.6],4);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'}).addTo(map);
+      layers = L.featureGroup().addTo(map);
+    } catch { map = null; }
+  }
+  function marker(point, label, origin = false) {
+    L.marker([point.lat,point.lon], {icon:L.divIcon({className:`route-marker${origin?' origin':''}`, html:escapeHTML(label), iconSize:[32,32], iconAnchor:[16,16]})})
+      .bindPopup(`<strong>${escapeHTML(point.name || point.label || 'Start')}</strong>${point.address?`<br>${escapeHTML(point.address)}`:''}`).addTo(layers);
+  }
+  function drawMap() {
+    if (!map) return;
+    layers.clearLayers();
+    $('map-prompt').hidden = Boolean(state.origin);
+    if (!state.origin) return;
+    marker(state.origin,'S',true);
+    const plan = state.plan;
+    if (plan?.road?.route?.geometry) L.geoJSON(plan.road.route.geometry, {style:{color:'#174e3e',weight:5,opacity:.85}}).addTo(layers);
+    plan?.stops.forEach((store,index) => marker(store,index+1));
+    if (plan?.stops.length) map.fitBounds(layers.getBounds(), {padding:[32,32],maxZoom:15});
+    else map.setView([state.origin.lat,state.origin.lon],15);
+  }
+  function clearResult() {
+    state.plan = null;
+    $('route-result').hidden = true;
+    $('google-route').removeAttribute('href');
+    $('route-list').innerHTML = '';
+    $('empty-route').hidden = false;
+    $('empty-route').textContent = 'Your ordered stops and Google Maps button will appear here.';
+    drawMap();
+  }
+  function renderRoute() {
+    const {stops,road,unassigned,returnHome,previewError} = state.plan;
+    const route = road?.route;
+    $('route-result').hidden = false;
+    $('empty-route').hidden = true;
+    $('stop-count').textContent = `${state.items.length-unassigned.length}/${state.items.length} entries assigned`;
+    $('route-summary').textContent = `${stops.length} stop${stops.length===1?'':'s'}${returnHome?' · Round trip':''}${route?` · ${distance(route.distance)} · ${minutes(route.duration)} driving`:''}`;
+    const url = fullRouteURL(state.origin,stops,returnHome);
+    $('google-route').hidden = !url;
+    if (url) $('google-route').href = url;
+    else $('google-route').removeAttribute('href');
+    $('waypoint-note').hidden = !url || (returnHome?stops.length:stops.length-1) <= 3;
+    $('preview-note').hidden = !previewError;
+    $('preview-note').textContent = previewError ? 'The road preview is unavailable. Your ordered Google Maps route is ready.' : '';
+    $('unassigned').hidden = !unassigned.length;
+    $('unassigned').innerHTML = unassigned.length ? `<strong>${unassigned.length} item${unassigned.length===1?' has':'s have'} no matching stop</strong>${unassigned.map(item=>escapeHTML(item.name)).join(', ')}.<br>These items aren’t in the route. Review categories or increase the search radius.` : '';
+    $('route-list').innerHTML = stops.map((store,index) => {
+      const leg = route?.legs?.[index];
+      const items = state.items.filter(item=>item.storeId===store.id);
+      return `<article class="route-stop"><div class="stop-header"><span class="stop-number">${index+1}</span><div class="stop-info"><h3>${escapeHTML(store.name)}</h3><p>${escapeHTML(store.address)}</p></div>${leg?`<span class="leg-badge">${minutes(leg.duration)} · ${distance(leg.distance)}</span>`:''}</div><ul class="stop-items">${items.map(item=>`<li>${escapeHTML(item.quantity)} ${escapeHTML(item.unit==='item'?'×':item.unit)} ${escapeHTML(item.name)}</li>`).join('')}</ul></article>`;
+    }).join('');
+    if (returnHome && stops.length) {
+      const leg = route?.legs?.at(-1);
+      $('route-list').insertAdjacentHTML('beforeend', `<div class="route-end">↩ Back to your starting point${leg?` · ${minutes(leg.duration)} · ${distance(leg.distance)}`:''}</div>`);
+    }
+    $('route-method').textContent = `Shortest driving-time sequence within ${state.plan.candidateCount} shortlisted stores (up to 3 per category). ${state.plan.discoveredCount} OpenStreetMap places found${state.plan.truncated?'; provider result limit reached':''}. Store types suggest what they sell; stock and opening hours aren’t checked. Google Maps recalculates roads and traffic.`;
+  }
+  function showReview() {
+    $('review-panel').hidden = false;
+    $('review-panel').innerHTML = `<h3>Check your categories</h3><p>Choose the store type for unfamiliar items. Unassigned items won’t add a stop.</p>${state.items.map(item=>`<div class="review-item"><span>${escapeHTML(item.name)}</span><select data-category="${item.id}" aria-label="Category for ${escapeHTML(item.name)}"><option value="">Unassigned</option>${Object.entries(CATEGORIES).map(([key,category])=>`<option value="${key}" ${item.category===key?'selected':''}>${escapeHTML(category.label)}</option>`).join('')}</select></div>`).join('')}<button id="build-reviewed" class="primary" type="button">Build route with these categories ↗</button>`;
+    $('build-reviewed').addEventListener('click', () => {
+      if (state.busy) return;
+      for (const select of $('review-panel').querySelectorAll('[data-category]')) state.items.find(item=>item.id===select.dataset.category).category = select.value || null;
+      $('review-panel').hidden = true;
+      buildRoute();
+    });
+    $('review-panel').scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function handleError(error) {
+    if (error.name==='AbortError' || state.controller?.signal.aborted) status('Route planning cancelled.');
+    else status(error.message || 'Route planning failed. Please try again.','error');
+  }
+  async function submitTrip(event) {
+    event.preventDefault();
+    if (state.busy) return;
+    try {
+      const items = parseInput($('shopping-list').value);
+      if (!items.length) throw new Error('Add at least one unchecked shopping item.');
+      const address = $('address').value.trim();
+      if (!address) throw new Error('Add a starting address or coordinates.');
+      state.items = items;
+      state.origin = null;
+      clearResult();
+      $('origin-choices').hidden = true;
+      $('review-panel').hidden = true;
+      state.controller = new AbortController();
+      setBusy(true);
+      status('Finding your starting address…','busy');
+      const coords = coordinateInput(address);
+      const choices = coords ? [coords] : await client.geocode({query:address},state.controller.signal);
+      if (!choices.length) throw new Error('No address matches. Add a city and state, or enter latitude, longitude.');
+      $('origin-choices').innerHTML = `<h3>Confirm your starting point</h3><p>Choose a match to build your trip.</p>${choices.map((choice,index)=>`<button class="origin-option" data-origin="${index}" type="button"><span><strong>${escapeHTML(choice.label)}</strong><small>${escapeHTML(choice.precision)} · ${choice.lat.toFixed(5)}, ${choice.lon.toFixed(5)}</small></span><span aria-hidden="true">↗</span></button>`).join('')}`;
+      $('origin-choices').hidden = false;
+      $('origin-choices').querySelectorAll('[data-origin]').forEach(button=>button.addEventListener('click',()=>{
+        if (state.busy) return;
+        state.origin = choices[Number(button.dataset.origin)];
+        $('origin-choices').hidden = true;
+        drawMap();
+        if (state.items.some(item=>!item.category)) {status('Starting point selected. Review the unassigned categories.');showReview();}
+        else buildRoute();
+      }));
+      status('Confirm your starting point below the map.');
+      $('origin-choices').scrollIntoView({behavior:'smooth',block:'center'});
+    } catch (error) { handleError(error); }
+    finally { setBusy(false); }
+  }
+  async function buildRoute() {
+    if (state.busy || !state.origin) return;
+    clearResult();
+    state.controller = new AbortController();
+    setBusy(true);
+    try {
+      const signal = state.controller.signal;
+      const categories = [...new Set(state.items.map(item=>item.category).filter(Boolean))];
+      if (!categories.length) throw new Error('Choose at least one category, then optimize again.');
+      status('Finding stores near your starting point…','busy');
+      const discovered = await client.stores({origin:state.origin,radiusKm:Number($('radius').value),categories,onProgress:message=>status(message,'busy')},signal);
+      const candidates = shortlistStores(discovered.stores,categories);
+      let selection = {stops:[],missing:categories}, road = null, previewError = false;
+      const returnHome = $('round-trip').value==='yes';
+      if (candidates.length) {
+        status(`Comparing driving times across ${candidates.length} store candidates…`,'busy');
+        const matrix = await client.matrix({points:[state.origin,...candidates]},signal);
+        selection = sortRoute(candidates,matrix.durations,categories,returnHome);
+        if (selection.unreachable) throw new Error('No drivable sequence covers these categories. Try another starting point, radius or category selection.');
+        if (selection.stops.length) {
+          status('Finishing your route…','busy');
+          try { road = await client.route({points:[state.origin,...selection.stops,...(returnHome?[state.origin]:[])]},signal); }
+          catch (error) { if (signal.aborted) throw error; previewError = true; }
+        }
+      }
+      state.items = assignItems(state.items,selection.stops);
+      state.plan = {stops:selection.stops,road,unassigned:state.items.filter(item=>!item.storeId),returnHome,previewError,candidateCount:candidates.length,discoveredCount:discovered.stores.length,truncated:discovered.truncated};
+      drawMap();
+      renderRoute();
+      if (!selection.stops.length) status('No matching stores found. Increase the radius or review categories.','error');
+      else status(state.plan.unassigned.length ? `Route ready for ${state.items.length-state.plan.unassigned.length}/${state.items.length} items. Review unmatched items or open Google Maps.` : 'Route ready. Open Google Maps to follow your stops in order.');
+      $('route-result').scrollIntoView({behavior:'smooth',block:'start'});
+    } catch (error) { handleError(error); }
+    finally { setBusy(false); }
+  }
+  function invalidateTrip() {
+    $('origin-choices').hidden = true;
+    $('review-panel').hidden = true;
+    if (state.items.length || state.origin || state.plan) {
+      state.origin = null;
+      clearResult();
+      status('Trip changed. Optimize again to update your route.');
+    }
+  }
+  $('trip-form').addEventListener('submit',submitTrip);
+  $('cancel').addEventListener('click',()=>state.controller?.abort());
+  $('review-categories').addEventListener('click',()=>{if(!state.busy)showReview();});
+  $('about-button').addEventListener('click',()=>$('about-dialog').showModal());
+  $('example-button').addEventListener('click',()=>{
+    $('shopping-list').value='2 milk\neggs\nbread\nbananas\n1 basketball\nflower pot\nDune paperback';
+    $('shopping-list').dispatchEvent(new Event('input'));
+    $('shopping-list').focus();
+  });
+  $('shopping-list').addEventListener('input',()=>{
+    try { const count=parseInput($('shopping-list').value).length;$('list-count').textContent=`${count} item${count===1?'':'s'}`; }
+    catch { $('list-count').textContent='Check list format'; }
+    invalidateTrip();
+  });
+  for (const id of ['address','radius','round-trip']) $(id).addEventListener('input',invalidateTrip);
+  initializeMap();
+}
+if (typeof document !== 'undefined') startApp();
+
+  </script>
 </body>
 </html>
